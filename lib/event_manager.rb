@@ -38,7 +38,17 @@ def save_thank_you_letter(id, form_letter)
   end
 end
 
-contents = CSV.open('event_attendees.csv', headers: true, header_converters: :symbol)
+def validate_phone(number)
+  if number.length < 10 || number.length > 11 || (number.length == 11 && number[0] != '1')
+    'bad'
+  elsif number.length == 11 && number[0] == '1'
+    number[1..]
+  else
+    number
+  end
+end
+
+contents = CSV.open('event_attendees_full.csv', headers: true, header_converters: :symbol)
 
 template_letter = File.read('form_letter.erb')
 erb_template = ERB.new(template_letter)
@@ -52,4 +62,8 @@ contents.each do |attendee|
   form_letter = erb_template.result(binding)
 
   save_thank_you_letter(id, form_letter)
+
+  # ASSIGNMENT - Clean phone number
+  phone = attendee[:homephone].scan(/\d+/).join('')
+  puts "#{phone} -- #{validate_phone(phone)} -- first digit: #{phone[0]}, length: #{phone.length}"
 end
