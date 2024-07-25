@@ -3,6 +3,7 @@
 require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
+require 'date'
 
 puts 'Event Manager Initialized!'
 
@@ -38,21 +39,24 @@ def save_thank_you_letter(id, form_letter)
   end
 end
 
-contents = CSV.open('event_attendees_full.csv', headers: true, header_converters: :symbol)
+contents = CSV.open('event_attendees.csv', headers: true, header_converters: :symbol)
 
 template_letter = File.read('form_letter.erb')
 erb_template = ERB.new(template_letter)
 
-contents.each do |attendee|
-  id = attendee[0]
-  name = attendee[:first_name]
-  zipcode = clean_zipcode(attendee[:zipcode])
-  legislators = legislators_by_zipcode(zipcode)
+def generate_letters(attendees_list, template)
+  attendees_list.each do |attendee|
+    id = attendee[0]
+    name = attendee[:first_name]
+    zipcode = clean_zipcode(attendee[:zipcode])
+    legislators = legislators_by_zipcode(zipcode)
 
-  form_letter = erb_template.result(binding)
+    form_letter = template.result(binding)
 
-  save_thank_you_letter(id, form_letter)
+    save_thank_you_letter(id, form_letter)
+  end
 end
+# generate_letters(contents, erb_template)
 
 # ASSIGNMENT - Clean phone number
 def validate_phone(number)
@@ -65,10 +69,23 @@ def validate_phone(number)
   end
 end
 
-def clean_phone_list(list)
-  list.each do |attendee|
-    phone = attendee[:homephone].scan(/\d+/).join('')
+def clean_phone_list(phone_list)
+  phone_list.each do |item|
+    phone = item[:homephone].scan(/\d+/).join('')
     puts "#{phone} -- #{validate_phone(phone)} -- first digit: #{phone[0]}, length: #{phone.length}"
   end
 end
-clean_phone_list(contents)
+# clean_phone_list(contents)
+
+# ASSIGNMENT - Time Targetting
+def target_time(time_list)
+  freq = {}
+  time_list.each do |attendee|
+    reg_date = attendee[:regdate]
+    hour = Time.strptime(reg_date, '%m/%d/%y %H:%M').strftime('%H')
+    freq[hour] = 0 if freq[hour].nil?
+    freq[hour] += 1
+  end
+  freq.select { |k, v| v == freq.values.max }.keys[0]
+end
+puts target_time(contents)
