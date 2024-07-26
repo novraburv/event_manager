@@ -1,12 +1,21 @@
 # frozen_string_literal: true
 
 # ASSIGNMENT - Time Targetting
-def target_time(time_list)
+def key_selection(input, mode)
+  if mode == 'hour'
+    input.strftime('%H')
+  elsif mode == 'wday'
+    input.wday
+  end
+end
+
+def target_time(time_list, mode)
   freq = {}
   time_list.each do |attendee|
-    hour = Time.strptime(attendee[:regdate], '%m/%d/%y %H:%M').strftime('%H')
-    freq[hour] = 0 if freq[hour].nil?
-    freq[hour] += 1
+    time = Time.strptime(attendee[:regdate], '%m/%d/%y %H:%M')
+    key = key_selection(time, mode)
+    freq[key] = 0 if freq[key].nil?
+    freq[key] += 1
   end
   freq.select { |_k, v| v == freq.values.max }.keys[0]
 end

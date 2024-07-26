@@ -13,4 +13,5 @@ erb_template = ERB.new(template_letter)
 
 generate_letters(contents, erb_template)
 clean_phone_list(contents)
-target_time(contents)
+target_time(contents, 'hour')
+target_time(contents, 'wday')
