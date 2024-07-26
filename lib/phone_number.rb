@@ -12,8 +12,8 @@ def validate_phone(number)
 end
 
 def clean_phone_list(phone_list)
-  phone_list.each do |item|
-    phone = item[:homephone].scan(/\d+/).join('')
-    puts "#{phone} -- #{validate_phone(phone)} -- first digit: #{phone[0]}, length: #{phone.length}"
+  phone_list.map do |item|
+    n = item[:homephone].scan(/\d+/).join('')
+    validate_phone(n)
   end
 end

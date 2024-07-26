@@ -4,8 +4,7 @@
 def target_time(time_list)
   freq = {}
   time_list.each do |attendee|
-    reg_date = attendee[:regdate]
-    hour = Time.strptime(reg_date, '%m/%d/%y %H:%M').strftime('%H')
+    hour = Time.strptime(attendee[:regdate], '%m/%d/%y %H:%M').strftime('%H')
     freq[hour] = 0 if freq[hour].nil?
     freq[hour] += 1
   end

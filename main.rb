@@ -2,10 +2,11 @@
 
 require_relative 'lib/event_manager'
 require_relative 'lib/phone_number'
+require_relative 'lib/time_target_finder'
 require 'csv'
 require 'erb'
 
-contents = CSV.open('event_attendees.csv', headers: true, header_converters: :symbol)
+contents = CSV.read('event_attendees.csv', headers: true, header_converters: :symbol)
 
 template_letter = File.read('form_letter.erb')
 erb_template = ERB.new(template_letter)
